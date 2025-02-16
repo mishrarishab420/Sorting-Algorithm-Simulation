@@ -3,36 +3,48 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
-# Import the layouts for each page
+# Import layouts & callbacks
 from pages.home import home_layout
-from pages.input_array import input_array_layout
+from pages.input_array import input_array_layout, register_callbacks
 from pages.simulation import simulation_layout
 
-# Initialize the main app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+# Initialize the Dash app with Bootstrap
+app = dash.Dash(
+    __name__, 
+    external_stylesheets=[dbc.themes.BOOTSTRAP], 
+    suppress_callback_exceptions=True
+)
 
-# Create server
+# Create the Flask server for deployment
 server = app.server
 
-# Main app layout with routing
+# Define app layout with navigation
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content', className='container')  # Added 'container' class for layout styling
+    html.Div(id='page-content', className='container')  # Central container for page content
 ])
 
-# Callback for page routing
-@app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
+# Callback to handle routing between pages
+@app.callback(Output('page-content', 'children'), [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/':
+    if pathname in ['/', '/home']:
         return home_layout
     elif pathname == '/input-array':
         return input_array_layout
     elif pathname == '/simulation':
         return simulation_layout
     else:
-        return html.H3('404 Page not found')
+        return html.Div(
+            [
+                html.H3("404 - Page Not Found", className="text-center mt-5"),
+                html.A("Go Back to Home", href="/home", className="btn btn-primary d-block mx-auto mt-3")
+            ],
+            className="text-center"
+        )
 
-# Run the server
+# Register input array callbacks
+register_callbacks(app)
+
+# Run the app
 if __name__ == "__main__":
     app.run_server(debug=True)
