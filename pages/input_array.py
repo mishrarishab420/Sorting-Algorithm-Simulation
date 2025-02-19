@@ -70,7 +70,7 @@ input_array_layout = html.Div(
                             color="success",
                             className="btn-block mt-4",
                             disabled=True,  # Disabled by default
-                            href="/simulation"
+                            
                         )
                     ],
                     className="text-center"
@@ -144,4 +144,21 @@ def register_callbacks(app):
             elif val is not None and 10 <= val <= 99 and i < len(values) - 1:
                 n_submit_list[i + 1] = 1  # Auto-submit to move focus to the next box
 
-        return updated_values, n_submit_list
+    @app.callback(
+    Output('url', 'pathname'),
+    [Input('submit-button', 'n_clicks')],
+    [State('num-elements-input', 'value'), State('url', 'search')],
+    prevent_initial_call=True
+    )
+    def redirect_on_submit(n_clicks, num_elements, search):
+        if not num_elements:
+            raise PreventUpdate
+
+        # ✅ Extract Sorting Method from URL (Ensuring only one `method` exists)
+        query_params = dict(param.split('=') for param in search.lstrip('?').split('&') if '=' in param)
+        method = query_params.get("method", "")
+
+        if method:
+            return f"/sorting?num={num_elements}&method={method}"  # ✅ Corrected format
+
+        return "/sorting"
