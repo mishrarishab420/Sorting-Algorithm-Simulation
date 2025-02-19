@@ -78,7 +78,23 @@ input_array_layout = html.Div(
                 width={"size": 6, "offset": 3}
             )
         ),
-        
+        # Back Button (Goes to Home Page)
+        dbc.Row(
+            dbc.Col(
+                html.Div(
+                    children=[
+                        dbc.Button(
+                            "Back",
+                            href="/",  # ✅ Home page pe redirect karega
+                            color="secondary",
+                            className="btn-block mt-3"
+                        )
+                    ],
+                    className="text-center"
+                ),
+                width={"size": 6, "offset": 3}
+            )
+        ),
         # Footer or Information Section (Optional)
         dbc.Row(
             dbc.Col(
