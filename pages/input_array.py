@@ -1,17 +1,18 @@
+import dash
 from dash import dcc, html, Input, Output, State, ALL
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 
-# Input Array page layout
+# Updated Input Array Page Layout (Full Width Fix)
 input_array_layout = html.Div(
     children=[
         # Header Section
         dbc.Row(
             dbc.Col(
-                html.H1("Input Array for Sorting", className="text-center my-5"),
-                width=12,
-                style={"textAlign": "center"}
-            )
+                html.H1("Input Array for Sorting", className="text-center my-4"), 
+                width=12
+            ),
+            className="w-100 m-0 p-0"  # Ensuring full width
         ),
         
         # Input Form for the number of elements
@@ -19,44 +20,38 @@ input_array_layout = html.Div(
             dbc.Col(
                 html.Div(
                     children=[
-                        # Header
                         html.H3("Number of Elements (5 to 15)", className="text-center mb-4"),
-                        
-                        # Input Box
                         dcc.Input(
                             id='num-elements-input',
                             type='number',
                             min=5,
                             max=15,
-                            placeholder='Enter a number between 5 and 15',
+                            placeholder='No. of Array Elements',
                             className='mb-3',
-                            style={'width': '100%', 'textAlign': 'center'}
+                            style={'width': '100%', 'textAlign': 'center', 'fontWeight': '600'}
                         ),
-                        
-                        # Generate Array Button
                         dbc.Button(
                             "Generate Array Inputs",
                             id='generate-array-button',
                             color="primary",
                             className="btn-block mb-3",
-                            n_clicks=0  # Initialize n_clicks to 0
+                            n_clicks=0
                         )
                     ],
                     className="text-center"
                 ),
-                width={"size": 6, "offset": 3}
-            )
+                width=12
+            ),
+            className="w-100 m-0 p-0"  # Full width fix
         ),
         
-        # Dynamic Array Input Boxes (Initially Empty)
+        # Dynamic Array Input Boxes
         dbc.Row(
             dbc.Col(
-                html.Div(
-                    id='array-input-container',
-                    className="input-array-box-container"
-                ),
-                width={"size": 6, "offset": 3}
-            )
+                html.Div(id='array-input-container', className="input-array-box-container"),
+                width=12
+            ),
+            className="w-100 m-0 p-0"
         ),
         
         # Submit Button
@@ -69,47 +64,55 @@ input_array_layout = html.Div(
                             id='submit-button',
                             color="success",
                             className="btn-block mt-4",
-                            disabled=True,  # Disabled by default
-                            
+                            disabled=True
                         )
                     ],
                     className="text-center"
                 ),
-                width={"size": 6, "offset": 3}
-            )
+                width=12
+            ),
+            className="w-100 m-0 p-0"
         ),
-        # Back Button (Goes to Home Page)
+        
+        # Back Button
         dbc.Row(
             dbc.Col(
                 html.Div(
                     children=[
                         dbc.Button(
                             "Back",
-                            href="/",  # ✅ Home page pe redirect karega
+                            href="/",
                             color="secondary",
                             className="btn-block mt-3"
                         )
                     ],
                     className="text-center"
                 ),
-                width={"size": 6, "offset": 3}
-            )
+                width=12
+            ),
+            className="w-100 m-0 p-0"
         ),
-        # Footer or Information Section (Optional)
+        
+        # Footer or Information Section
         dbc.Row(
             dbc.Col(
                 html.Div(
                     children=[
-                        html.P("Enter the array elements and click 'Submit' to visualize the sorting algorithm.", className="text-center mt-4")
+                        html.P("Enter the array elements and click 'Submit' to visualize the sorting algorithm.", 
+                               className="text-center mt-4")
                     ]
                 ),
-                width={"size": 6, "offset": 3}
-            )
-        )
-    ]
+                width=12
+            ),
+            className="w-100 m-0 p-0"
+        ),
+
+        # Store component to hold the array data
+        dcc.Store(id='array-data-store')
+    ],
+    className="p-0 m-0 w-100"  # Ensuring full width
 )
 
-# Callback to generate array input boxes dynamically and enable the submit button
 def register_callbacks(app):
     @app.callback(
         Output('array-input-container', 'children'),
@@ -146,35 +149,49 @@ def register_callbacks(app):
         Output({'type': 'array-input', 'index': ALL}, 'value'),
         Output({'type': 'array-input', 'index': ALL}, 'n_submit'),
         Input({'type': 'array-input', 'index': ALL}, 'value'),
-        State({'type': 'array-input', 'index': ALL}, 'id'),
         prevent_initial_call=True
     )
-    def enforce_two_digit_and_autofocus(values, ids):
-        # Enforce two-digit number validation
-        updated_values = list(values)
-        n_submit_list = [None] * len(values)  # Initialize empty submit list
+    def enforce_two_digit_and_autofocus(values):
+        if not values:
+            raise PreventUpdate  # Avoid unnecessary updates
+
+        updated_values = list(values)  # Copy of values to modify
+        n_submit_list = [None] * len(values)  # Initialize n_submit list
 
         for i, val in enumerate(values):
             if val is not None and (val < 10 or val > 99):
                 updated_values[i] = None  # Reset invalid input
             elif val is not None and 10 <= val <= 99 and i < len(values) - 1:
-                n_submit_list[i + 1] = 1  # Auto-submit to move focus to the next box
+                n_submit_list[i + 1] = 1  # Auto-focus on the next box
 
+        return updated_values, n_submit_list  # ✅ Ensure correct return values
+
+    # Callback to store array data and redirect to the sorting page
     @app.callback(
+    Output('array-data-store', 'data', allow_duplicate=True),  # Allow duplicate output
     Output('url', 'pathname'),
-    [Input('submit-button', 'n_clicks')],
-    [State('num-elements-input', 'value'), State('url', 'search')],
+    Input('submit-button', 'n_clicks'),
+    State({'type': 'array-input', 'index': ALL}, 'value'),
+    State('num-elements-input', 'value'),
+    State('url', 'search'),
     prevent_initial_call=True
-    )
-    def redirect_on_submit(n_clicks, num_elements, search):
-        if not num_elements:
-            raise PreventUpdate
+)
+    def store_array_data_and_redirect(n_clicks, array_values,num_elements,search):
+        if not array_values or any(val is None for val in array_values):
+            raise dash.exceptions.PreventUpdate
 
-        # ✅ Extract Sorting Method from URL (Ensuring only one `method` exists)
+
+        # Store the array data in the dcc.Store component
+        array_data = {
+            'num_elements': num_elements,
+            'array_values': array_values
+        }
+
+        # Extract Sorting Method from URL
         query_params = dict(param.split('=') for param in search.lstrip('?').split('&') if '=' in param)
         method = query_params.get("method", "")
 
         if method:
-            return f"/sorting?num={num_elements}&method={method}"  # ✅ Corrected format
-
-        return "/sorting"
+            return array_data, f"/sorting?num={num_elements}&method={method}"  # Redirect with sorting method
+        else:
+            return array_data, "/sorting"  # Redirect without sorting method

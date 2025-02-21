@@ -5,10 +5,34 @@ body {
     color: #2c3e50;
     margin: 0;
     padding: 0;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+}
+
+/* Background Animation */
+body::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    animation: rotateBackground 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotateBackground {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Header Section */
@@ -18,6 +42,16 @@ h1 {
     color: #2c3e50;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 h3 {
@@ -25,9 +59,45 @@ h3 {
     font-weight: 600;
     color: #34495e;
     margin-bottom: 30px;
+    animation: fadeIn 1.5s ease-out;
 }
 
-/* Algorithm Selection Buttons */
+/* Input Box Styles */
+.input-array-box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.input-array-box-container input {
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.input-array-box-container input:focus {
+    border-color: #2980b9;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    transform: scale(1.05);
+    outline: none;
+}
+
+.input-array-box-container input::placeholder {
+    color: #bdc3c7;
+    font-size: 1rem;
+}
+
+/* Button Styles */
 .btn-block {
     font-size: 1.2rem;
     font-weight: 600;
@@ -44,6 +114,7 @@ h3 {
     width: 100%;
     max-width: 300px;
     display: inline-block;
+    animation: fadeInUp 1s ease-out;
 }
 
 .btn-block::before {
@@ -66,18 +137,31 @@ h3 {
 .btn-block:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #2575fc, #6a11cb);
 }
 
 .btn-primary {
     background: linear-gradient(135deg, #3498db, #2980b9);
 }
 
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+}
+
 .btn-success {
     background: linear-gradient(135deg, #2ecc71, #27ae60);
 }
 
+.btn-success:hover {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
 .btn-warning {
     background: linear-gradient(135deg, #f1c40f, #f39c12);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #f39c12, #f1c40f);
 }
 
 /* Glassmorphism Effect for Container */
@@ -88,6 +172,18 @@ h3 {
     padding: 40px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: slideIn 1s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Footer Section */
@@ -95,6 +191,7 @@ p {
     font-size: 1.1rem;
     color: #7f8c8d;
     margin-top: 20px;
+    animation: fadeIn 2s ease-out;
 }
 
 /* Responsive Design */
@@ -115,6 +212,12 @@ p {
     p {
         font-size: 1rem;
     }
+
+    .input-array-box-container input {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
 }
 
 /* Custom Animations */
@@ -129,15 +232,17 @@ p {
     }
 }
 
-.fade-in {
-    animation: fadeIn 1s ease-out;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* Grid Layout for Buttons */
-.button-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    justify-content: center;
-    align-items: center;
+.fade-in {
+    animation: fadeIn 1s ease-out;
 }
