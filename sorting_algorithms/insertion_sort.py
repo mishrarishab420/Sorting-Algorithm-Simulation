@@ -11,23 +11,23 @@ def insertion_sort(arr):
         j = i - 1
 
         # Step 1: Highlight comparison (both elements move up)
-        yield arr.copy(), j, i, "move_up"
+        yield arr.copy(), j, i, "move_up", f"Compare {arr[j]} and {key}"
 
         while j >= 0 and key < arr[j]:
             # Step 2: Pause in the up position while comparing
-            yield arr.copy(), j, j + 1, "compare"
+            yield arr.copy(), j, j + 1, "compare", f"Comparing {arr[j]} and {key}"
             
             # Step 3: If the key is smaller, swap positions horizontally
-            yield arr.copy(), j, j + 1, "swap_horizontal"
+            yield arr.copy(), j, j + 1, "swap_horizontal", f"Swapping {arr[j]} and {key}"
             
             # Step 4: Shift elements right
             arr[j + 1] = arr[j]
-            yield arr.copy(), j, j + 1, "shift"
+            yield arr.copy(), j, j + 1, "shift", f"Shifting {arr[j]} to the right"
             j -= 1
 
         # Step 5: Place the key at its correct position
         arr[j + 1] = key
-        yield arr.copy(), j + 1, i, "place"
+        yield arr.copy(), j + 1, i, "place", f"Placing {key} in its correct position"
 
 # Layout for the Insertion Sort Page
 def insertion_sort_layout():
@@ -79,36 +79,50 @@ def insertion_sort_layout():
             # Dynamic Array Display
             dbc.Row(
                 dbc.Col(
-                    html.Div(id="array-container", className="input-array-box-container"),
+                    html.Div(id="array-container", style={"display": "flex", "justifyContent": "center", "alignItems": "flex-end", "height": "300px"}),
                     width=12
                 ),
                 className="w-100 m-0 p-0"
             ),
             
-            # Interval for Animation
-            dcc.Interval(id="interval", interval=1000, n_intervals=0, disabled=True),
+            # Step Explanation
+            dbc.Row(
+                dbc.Col(
+                    html.Div(id="step-explanation", className="text-center mt-3", style={"fontSize": "20px", "transition": "opacity 0.5s ease-in-out"}),
+                    width=12
+                ),
+                className="w-100 m-0 p-0"
+            ),
             
-         dcc.Store(id="array-data-store")  
+            # Interval for Animation (slowed down to 1500ms)
+            dcc.Interval(id="interval", interval=1500, n_intervals=0, disabled=True),
+            
+            dcc.Store(id="array-data-store")  
         ],
         className="p-0 m-0 w-100"  # Ensuring full width
     )
 
 # Callbacks for Insertion Sort
 def register_callbacks(app):
+    # Global variables
+    global sort_generator
+    sort_generator = None
+
     @app.callback(
         [Output("array-container", "children"),
-        Output("interval", "disabled"),
-        Output("array-data-store", "data", allow_duplicate=True)],  # Allow duplicate output
+         Output("interval", "disabled"),
+         Output("array-data-store", "data", allow_duplicate=True),
+         Output("step-explanation", "children"),
+         Output("step-explanation", "style")],  # Add style for explanation animation
         [Input("interval", "n_intervals"),
-        Input("start-button", "n_clicks"),
-        Input("restart-button", "n_clicks"),
-        Input("back-button", "n_clicks")],
+         Input("start-button", "n_clicks"),
+         Input("restart-button", "n_clicks"),
+         Input("back-button", "n_clicks")],
         [State("array-container", "children"),
-        State("interval", "disabled"),
-        State("array-data-store", "data")],
+         State("interval", "disabled"),
+         State("array-data-store", "data")],
         prevent_initial_call=True
     )
-    
     def update_array(n_intervals, start_clicks, restart_clicks, back_clicks, current_children, interval_disabled, array_data):
         ctx = dash.callback_context
         global sort_generator
@@ -124,27 +138,30 @@ def register_callbacks(app):
             array_data = {"array_values": np.random.randint(1, 100, 10).tolist()}
 
         arr = array_data["array_values"]
-        array_boxes = [
-        html.Div(str(value), className="array-box") for value in arr
-    ]
 
         # Handle button clicks
         if button_id == "start-button" and start_clicks > 0:
             sort_generator = insertion_sort(arr.copy())
             interval_disabled = False
         elif button_id == "restart-button" and restart_clicks > 0:
-            sort_generator = insertion_sort(arr.copy())
+            array_data = {"array_values": np.random.randint(1, 100, 10).tolist()}
+            sort_generator = insertion_sort(array_data["array_values"].copy())
             interval_disabled = False
         elif button_id == "back-button" and back_clicks > 0:
-            return [], True, array_data  # Reset and go back
+            return [], True, array_data, "", {"fontSize": "20px", "opacity": 0}  # Reset and go back
 
         # Step through sorting animation
+        step_explanation = ""
+        explanation_style = {"fontSize": "20px", "opacity": 1, "transition": "opacity 0.5s ease-in-out"}
         if not interval_disabled and sort_generator is not None:
             try:
-                sorted_arr, move_index, current_index, action = next(sort_generator)
+                sorted_arr, move_index, current_index, action, explanation = next(sort_generator)
                 array_data["array_values"] = sorted_arr  # Update stored array
+                step_explanation = explanation  # Update step explanation
             except StopIteration:
                 interval_disabled = True
+                step_explanation = "Sorting completed!"
+                explanation_style["opacity"] = 0  # Fade out explanation
 
         # Create boxes for the array elements
         boxes = []
@@ -156,7 +173,7 @@ def register_callbacks(app):
                 "display": "flex",
                 "alignItems": "center",
                 "justifyContent": "center",
-                "margin": "5px",
+                "margin": "5px",  # Margin between boxes
                 "backgroundColor": "skyblue",
                 "fontSize": "20px",
                 "position": "relative",
@@ -167,19 +184,19 @@ def register_callbacks(app):
             if not interval_disabled and sort_generator is not None:
                 if idx == current_index or idx == move_index:
                     if action == "move_up":
-                        box_style["transform"] = "translateY(-100px)"
+                        box_style["transform"] = "translateY(-60px)"
                         box_style["backgroundColor"] = "yellow"
                     elif action == "compare":
-                        box_style["transform"] = "translateY(-100px)"
+                        box_style["transform"] = "translateY(-50px)"
                         box_style["backgroundColor"] = "orange"
                     elif action == "swap_horizontal":
                         if idx == move_index:
-                            box_style["transform"] = "translateX(-100px) translateY(-100px)"
+                            box_style["transform"] = "translateX(-50px) translateY(-50px)"
                         elif idx == current_index:
-                            box_style["transform"] = "translateX(100px) translateY(-100px)"
+                            box_style["transform"] = "translateX(50px) translateY(-50px)"
                         box_style["backgroundColor"] = "red"
                     elif action == "shift":
-                        box_style["transform"] = "translateY(-100px)"
+                        box_style["transform"] = "translateY(-50px)"
                         box_style["backgroundColor"] = "lightblue"
                     elif action == "place":
                         box_style["transform"] = "translateY(0px)"
@@ -187,4 +204,5 @@ def register_callbacks(app):
 
             boxes.append(html.Div(str(value), style=box_style))
 
-        return boxes, interval_disabled, array_data
+        return boxes, interval_disabled, array_data, step_explanation, explanation_style
+

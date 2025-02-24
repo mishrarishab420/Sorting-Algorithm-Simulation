@@ -218,6 +218,39 @@ p {
         height: 50px;
         font-size: 1.2rem;
     }
+
+    .container-glass {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    .btn-block {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+
+    p {
+        font-size: 0.9rem;
+    }
+
+    .input-array-box-container input {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .container-glass {
+        padding: 15px;
+    }
 }
 
 /* Custom Animations */
