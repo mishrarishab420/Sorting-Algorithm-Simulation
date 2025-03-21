@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 from pages.home import home_layout
 from pages.input_array import input_array_layout, register_callbacks as register_input_array_callbacks
 from sorting_algorithms.insertion_sort import insertion_sort_layout, register_callbacks as register_insertion_sort_callbacks
-from sorting_algorithms.merge_sort import merge_sort_layout#, register_callbacks as register_merge_sort_callbacks
+from sorting_algorithms.selection_sort import selection_sort_layout, register_callbacks as register_selection_sort_callbacks
 from sorting_algorithms.quick_sort import quick_sort_layout#, register_callbacks as register_quick_sort_callbacks
 
 # Initialize the Dash app
@@ -65,8 +65,8 @@ def display_page(pathname, stored_method, search):
         # Match Sorting Method to the Correct Layout
         if method == "quick-sort":
             return quick_sort_layout  # Call the function to generate the layout
-        elif method == "merge-sort":
-            return merge_sort_layout  # Call the function to generate the layout
+        elif method == "selection-sort":
+            return selection_sort_layout()  # Call the function to generate the layout
         elif method == "insertion-sort":
             return insertion_sort_layout()  # Call the function to generate the layout
         else:
@@ -77,7 +77,7 @@ def display_page(pathname, stored_method, search):
 # Register callbacks for all pages
 register_input_array_callbacks(app)
 register_insertion_sort_callbacks(app)
-#register_merge_sort_callbacks(app)
+register_selection_sort_callbacks(app)
 #register_quick_sort_callbacks(app)
 
 # Run the app

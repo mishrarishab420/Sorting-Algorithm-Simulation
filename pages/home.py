@@ -26,7 +26,7 @@ home_layout = html.Div(
                             className="button-grid",
                             children=[
                                 dbc.Button("Quick Sort", color="primary", className="btn-block fade-in", href="/input-array?method=quick-sort"),
-                                dbc.Button("Merge Sort", color="success", className="btn-block fade-in", href="/input-array?method=merge-sort"),
+                                dbc.Button("Selection Sort", color="success", className="btn-block fade-in", href="/input-array?method=selection-sort"),
                                 dbc.Button("Insertion Sort", color="warning", className="btn-block fade-in", href="/input-array?method=insertion-sort")
                             ]
                         )

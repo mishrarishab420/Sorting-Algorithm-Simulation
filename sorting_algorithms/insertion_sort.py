@@ -111,7 +111,7 @@ def register_callbacks(app):
     @app.callback(
         [Output("array-container", "children"),
          Output("interval", "disabled"),
-         Output("array-data-store", "data", allow_duplicate=True),
+         Output("array-data-store", "data"),
          Output("step-explanation", "children"),
          Output("step-explanation", "style")],  # Add style for explanation animation
         [Input("interval", "n_intervals"),
