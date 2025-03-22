@@ -78,7 +78,20 @@ def selection_sort_layout():
             # Step Explanation
             dbc.Row(
                 dbc.Col(
-                    html.Div(id="step-explanation", className="text-center mt-3", style={"fontSize": "20px", "transition": "opacity 0.5s ease-in-out"}),
+                    html.Div(
+                        id="step-explanation",
+                        className="text-center mt-3 p-3",
+                        style={
+                            "fontSize": "24px",
+                            "fontWeight": "bold",
+                            "transition": "opacity 0.5s ease-in-out",
+                            "backgroundColor": "#f8f9fa",  # Light background color
+                            "border": "2px solid #dee2e6",  # Border
+                            "borderRadius": "10px",  # Rounded corners
+                            "maxWidth": "80%",  # Limit width
+                            "margin": "0 auto"  # Center horizontally
+                        }
+                    ),
                     width=12
                 ),
                 className="w-100 m-0 p-0"
@@ -103,7 +116,7 @@ def selection_sort_layout():
     )
 
 # Callbacks for Selection Sort
-def register_callbacks(app):
+def register_selection_sort_callbacks(app):
     # Global variables
     global sorting_steps, global_array, original_array
     sorting_steps = []
@@ -173,7 +186,6 @@ def register_callbacks(app):
                 step = sorting_steps[n_intervals]
                 if step[0] == 'compare':
                     step_explanation = f"Comparing {global_array[step[1]]} and {global_array[step[2]]}. Current smallest: {global_array[step[3]]}"
-                    smallest_text = f"Current Smallest: {global_array[step[3]]}"
                     compare_idx = step[1]
                     swap_idx = step[2]
                     min_idx = step[3]
@@ -203,13 +215,15 @@ def register_callbacks(app):
         boxes = []
         for i, value in enumerate(arr):
             style = {
-                "width": "50px",
-                "height": "50px",
-                "border": "1px solid #000",
+                "width": "100px",
+                "height": "100px",
+                "border": "3px solid #000",
+                "borderRadius": "50%",
                 "display": "flex",
                 "alignItems": "center",
                 "justifyContent": "center",
-                "margin": "5px",
+                "fontSize": "20px",
+                "margin": "10px",
                 "transition": "transform 0.5s, background-color 0.5s"
             }
             if compare_idx is not None and (i == compare_idx or i == swap_idx):

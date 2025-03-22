@@ -6,9 +6,9 @@ from dash.dependencies import Input, Output, State
 # Import layouts & callbacks
 from pages.home import home_layout
 from pages.input_array import input_array_layout, register_callbacks as register_input_array_callbacks
-from sorting_algorithms.insertion_sort import insertion_sort_layout, register_callbacks as register_insertion_sort_callbacks
-from sorting_algorithms.selection_sort import selection_sort_layout, register_callbacks as register_selection_sort_callbacks
-from sorting_algorithms.quick_sort import quick_sort_layout#, register_callbacks as register_quick_sort_callbacks
+from sorting_algorithms.insertion_sort import insertion_sort_layout, register_insertion_callbacks
+from sorting_algorithms.selection_sort import selection_sort_layout, register_selection_sort_callbacks
+from sorting_algorithms.quick_sort import quick_sort_layout, register_quick_sort_callbacks
 
 # Initialize the Dash app
 app = dash.Dash(
@@ -64,7 +64,7 @@ def display_page(pathname, stored_method, search):
 
         # Match Sorting Method to the Correct Layout
         if method == "quick-sort":
-            return quick_sort_layout  # Call the function to generate the layout
+            return quick_sort_layout()  # Call the function to generate the layout
         elif method == "selection-sort":
             return selection_sort_layout()  # Call the function to generate the layout
         elif method == "insertion-sort":
@@ -76,9 +76,9 @@ def display_page(pathname, stored_method, search):
 
 # Register callbacks for all pages
 register_input_array_callbacks(app)
-register_insertion_sort_callbacks(app)
+register_insertion_callbacks(app)  # Register Insertion Sort callbacks
 register_selection_sort_callbacks(app)
-#register_quick_sort_callbacks(app)
+register_quick_sort_callbacks(app)  # Uncomment if quick_sort_callbacks is defined
 
 # Run the app
 if __name__ == "__main__":
